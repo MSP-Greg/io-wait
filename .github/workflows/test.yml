@@ -4,18 +4,20 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}-latest
+    runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        ruby: [ 'head', '3.0', '2.7', '2.6' ]
-        os: [ ubuntu, macos, windows ]
+        os: [ ubuntu-latest, macos-latest, windows-2022 ]
+        ruby: [ 'head', '3.1', '3.0', '2.7', '2.6' ]
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: ${{ matrix.ruby }}
-    - name: Set up Bundler
-      run: gem install rake-compiler --no-document
-    - name: Run test
-      run: rake
+      - uses: actions/checkout@v2
+      - name: Set up Ruby
+        uses: MSP-Greg/ruby-setup-ruby@win-ucrt-1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: false
+      - name: gem install
+        run: gem install rake-compiler --no-document
+      - name: Run test
+        run: rake
